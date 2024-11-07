@@ -31,3 +31,31 @@ class Snake:
         # Check if the snake's head collides with any wall
         head = self.body[0]
         return head in walls.positions
+
+
+class Fruit:
+    def __init__(self):
+        self.position = self.random_position()
+
+    def random_position(self):
+        return random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1)
+
+    def new_position(self, snake_body, walls):
+        # Ensure fruit doesn't spawn on the snake or walls
+        while True:
+            self.position = self.random_position()
+            if self.position not in snake_body and self.position not in walls.positions:
+                break
+
+
+class Wall:
+    def __init__(self):
+        self.positions = []
+
+    def add_wall(self, snake_body, fruit_position):
+        # Generate a new wall at a random empty position
+        while True:
+            new_wall = (random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1))
+            if new_wall not in snake_body and new_wall != fruit_position:
+                self.positions.append(new_wall)
+                break
