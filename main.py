@@ -1,8 +1,10 @@
+from random import choice
 import pygame
 import sys
 from settings import FPS, GRID_WIDTH, GRID_HEIGHT
 from game import Snake, Fruit, Wall
 from render import initialize_screen, draw_elements
+from qlearning import train_qlearning, get_state, take_action, load_q_table
 
 
 def main_menu(screen, score=None):
@@ -52,7 +54,7 @@ def main_menu(screen, score=None):
                     return "Q_LEARNING"
 
 
-def game_loop(mode):
+def game_loop(mode, Q_table=None):
     screen = initialize_screen()
     clock = pygame.time.Clock()
 
@@ -90,9 +92,15 @@ def game_loop(mode):
         # Snake movement and logic based on the mode
         if mode == "USER":
             snake.move()
-        else:
-            # AI logic to set snake direction goes here
-            pass
+        elif mode == "Q_LEARNING":
+            state = get_state(snake, fruit, walls)
+            if state not in Q_table:
+                print(f"State {state} not found in Q-table. Taking random action.")
+                action = choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
+            else:
+                action = max(Q_table[state], key=Q_table[state].get)
+                print("action found in q table")
+            take_action(action, snake)  # Execute the chosen action
 
         # Check for collisions with walls or boundaries
         if snake.check_collision() or snake.check_wall_collision(walls):
@@ -101,9 +109,9 @@ def game_loop(mode):
         # Check if the snake eats the fruit
         if snake.body[0] == fruit.position:
             snake.grow()
-            score += 1  # Increment score when fruit is eaten
+            score += 10
             walls.add_wall(snake.body, fruit.position)
-            walls_count += 1  # Increment wall count when a new wall is added
+            walls_count += 1
             fruit.new_position(snake.body, walls.positions)
 
         # Draw all elements, including score and wall count
@@ -116,11 +124,13 @@ def game_loop(mode):
 if __name__ == "__main__":
     screen = initialize_screen()
 
-    score = None  # Initialize score to None for the first game
+    # Load an existing Q-table or train a new one
+    Q_table = load_q_table("q_table.pkl")
+    if not Q_table:
+        Q_table = train_qlearning()
+
+    score = None
 
     while True:
-        # Show the main menu and get the selected mode
         mode = main_menu(screen, score)
-
-        # Start the game loop with the selected mode and capture the score
-        score = game_loop(mode)  # game_loop will return the score after game over
+        score = game_loop(mode, Q_table if mode == "Q_LEARNING" else None)

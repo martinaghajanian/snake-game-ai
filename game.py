@@ -28,9 +28,12 @@ class Snake:
         return head in self.body[1:]
 
     def check_wall_collision(self, walls):
-        # Check if the snake's head collides with any wall
-        head = self.body[0]
-        return head in walls.positions
+        head_x, head_y = self.body[0]
+        # Check collision with border walls or grid boundaries
+        if head_x < 0 or head_x >= GRID_WIDTH or head_y < 0 or head_y >= GRID_HEIGHT:
+            return True
+        # Check collision with internal walls
+        return (head_x, head_y) in walls.positions
 
 
 class Fruit:
@@ -64,16 +67,15 @@ class Wall:
             ]
             return any(neighbor in walls for neighbor in neighbors)
 
-
         # Collect all potential positions on the grid
         potential_positions = [
             (x, y)
             for x in range(GRID_WIDTH)
             for y in range(GRID_HEIGHT)
             if (x, y) not in snake_body
-            and (x, y) != fruit_position
-            and (x, y) not in self.positions
-            and not is_adjacent_or_diagonal((x, y), self.positions)
+               and (x, y) != fruit_position
+               and (x, y) not in self.positions
+               and not is_adjacent_or_diagonal((x, y), self.positions)
         ]
 
         # Check if there are any valid positions left
