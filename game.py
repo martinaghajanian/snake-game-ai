@@ -53,12 +53,27 @@ class Wall:
         self.positions = []
 
     def add_wall(self, snake_body, fruit_position):
+
+        def is_adjacent_or_diagonal(pos, walls):
+            # Check if the position is adjacent or diagonal to any existing wall
+            x, y = pos
+            neighbors = [
+                (x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
+                (x - 1, y), (x + 1, y),
+                (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)
+            ]
+            return any(neighbor in walls for neighbor in neighbors)
+
+
         # Collect all potential positions on the grid
         potential_positions = [
             (x, y)
             for x in range(GRID_WIDTH)
             for y in range(GRID_HEIGHT)
-            if (x, y) not in snake_body and (x, y) != fruit_position and (x, y) not in self.positions
+            if (x, y) not in snake_body
+            and (x, y) != fruit_position
+            and (x, y) not in self.positions
+            and not is_adjacent_or_diagonal((x, y), self.positions)
         ]
 
         # Check if there are any valid positions left
