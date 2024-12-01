@@ -53,10 +53,17 @@ class Wall:
         self.positions = []
 
     def add_wall(self, snake_body, fruit_position):
-        # Generate a new wall at a random empty position
-        while True:
-            new_wall = (random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1))
-            if new_wall not in snake_body and new_wall != fruit_position:
-                self.positions.append(new_wall)
-                break
+        # Collect all potential positions on the grid
+        potential_positions = [
+            (x, y)
+            for x in range(GRID_WIDTH)
+            for y in range(GRID_HEIGHT)
+            if (x, y) not in snake_body and (x, y) != fruit_position and (x, y) not in self.positions
+        ]
 
+        # Check if there are any valid positions left
+        if potential_positions:
+            new_wall = random.choice(potential_positions)  # Choose a random valid position
+            self.positions.append(new_wall)
+        else:
+            print("No space available to add a new wall.")
