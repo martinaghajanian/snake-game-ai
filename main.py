@@ -58,8 +58,9 @@ def game_loop(mode):
 
     snake = Snake()
     fruit = Fruit()
-    walls = Wall()  # Reinitialize walls each time game starts
-    score = 0
+    walls = Wall()
+    score = 0  # Initialize score counter
+    walls_count = 0  # Initialize wall counter
 
     # Add border walls to the walls object
     for x in range(GRID_WIDTH):
@@ -69,7 +70,6 @@ def game_loop(mode):
         walls.positions.append((0, y))  # Left border
         walls.positions.append((GRID_WIDTH - 1, y))  # Right border
 
-    # Reinitialize the fruit to avoid conflict with walls
     fruit.new_position(snake.body, walls.positions)
 
     while True:
@@ -101,12 +101,13 @@ def game_loop(mode):
         # Check if the snake eats the fruit
         if snake.body[0] == fruit.position:
             snake.grow()
-            score += 1
+            score += 1  # Increment score when fruit is eaten
             walls.add_wall(snake.body, fruit.position)
+            walls_count += 1  # Increment wall count when a new wall is added
             fruit.new_position(snake.body, walls.positions)
 
-        # Draw all elements
-        draw_elements(screen, snake, fruit, walls)
+        # Draw all elements, including score and wall count
+        draw_elements(screen, snake, fruit, walls, score, walls_count)
 
         # Control the game speed
         clock.tick(FPS)
