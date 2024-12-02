@@ -7,6 +7,7 @@ from qlearning import train_qlearning, get_state, take_action, load_q_table
 from bfs import *
 from gbfs import *
 from utils import *
+from ga import *
 
 def main_menu(screen, score=None):
     # Use a readable font size
@@ -18,6 +19,7 @@ def main_menu(screen, score=None):
     line3 = "Press 3 for Monte Carlo AI"
     line4 = "Press 4 for Q-Learning AI"
     line5 = "Press 5 for GBFS AI"
+    line6 = "Press 6 for GA AI"
     score_text = f"Last Score: {score}" if score is not None else ""  # Display score if available
 
     # Render each line of text
@@ -26,6 +28,7 @@ def main_menu(screen, score=None):
     text3 = font.render(line3, True, (255, 255, 255))
     text4 = font.render(line4, True, (255, 255, 255))
     text5 = font.render(line5, True, (255, 255, 255))
+    text6 = font.render(line6, True, (255, 255, 255))
     score_display = font.render(score_text, True, (255, 255, 255))
 
     # Clear the screen
@@ -37,7 +40,8 @@ def main_menu(screen, score=None):
     screen.blit(text3, (10, 70))
     screen.blit(text4, (10, 100))
     screen.blit(text5, (10, 130))
-    screen.blit(score_display, (10, 160))  # Display score below menu options
+    screen.blit(text6, (10, 160))
+    screen.blit(score_display, (10, 190))  # Display score below menu options
 
     # Update the display to show the text
     pygame.display.flip()
@@ -58,6 +62,8 @@ def main_menu(screen, score=None):
                     return "Q_LEARNING"
                 elif event.key == pygame.K_5:
                     return "GBFS"
+                elif event.key == pygame.K_6:
+                    return "GA"
 
 
 def game_loop(mode, Q_table=None):
@@ -122,6 +128,14 @@ def game_loop(mode, Q_table=None):
 
             if gbfs_path:
                 action = gbfs_path.pop(0)
+                take_action(action, snake)
+        elif mode == "GA":
+            genetic_path = [] if 'genetic_path' not in locals() else genetic_path
+            if not genetic_path:
+                genetic_path = genetic_algorithm(snake, fruit, walls)
+
+            if genetic_path:
+                action = genetic_path.pop(0)
                 take_action(action, snake)
 
         # Check for collisions with walls or boundaries
