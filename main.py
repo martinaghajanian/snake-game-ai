@@ -1,11 +1,12 @@
 from random import choice
 import pygame
 import sys
-from settings import FPS, GRID_WIDTH, GRID_HEIGHT
 from game import Snake, Fruit, Wall
 from render import initialize_screen, draw_elements
 from qlearning import train_qlearning, get_state, take_action, load_q_table
-
+from bfs import *
+from gbfs import *
+from utils import *
 
 def main_menu(screen, score=None):
     # Use a readable font size
@@ -13,9 +14,10 @@ def main_menu(screen, score=None):
 
     # Define each line of text separately
     line1 = "Press 1 for User Mode"
-    line2 = "Press 2 for And-Or AI"
+    line2 = "Press 2 for BFS AI"
     line3 = "Press 3 for Monte Carlo AI"
     line4 = "Press 4 for Q-Learning AI"
+    line5 = "Press 5 for GBFS AI"
     score_text = f"Last Score: {score}" if score is not None else ""  # Display score if available
 
     # Render each line of text
@@ -23,6 +25,7 @@ def main_menu(screen, score=None):
     text2 = font.render(line2, True, (255, 255, 255))
     text3 = font.render(line3, True, (255, 255, 255))
     text4 = font.render(line4, True, (255, 255, 255))
+    text5 = font.render(line5, True, (255, 255, 255))
     score_display = font.render(score_text, True, (255, 255, 255))
 
     # Clear the screen
@@ -33,7 +36,8 @@ def main_menu(screen, score=None):
     screen.blit(text2, (10, 40))
     screen.blit(text3, (10, 70))
     screen.blit(text4, (10, 100))
-    screen.blit(score_display, (10, 130))  # Display score below menu options
+    screen.blit(text5, (10, 130))
+    screen.blit(score_display, (10, 160))  # Display score below menu options
 
     # Update the display to show the text
     pygame.display.flip()
@@ -47,11 +51,13 @@ def main_menu(screen, score=None):
                 if event.key == pygame.K_1:
                     return "USER"
                 elif event.key == pygame.K_2:
-                    return "AND_OR"
+                    return "BFS"
                 elif event.key == pygame.K_3:
                     return "MONTE_CARLO"
                 elif event.key == pygame.K_4:
                     return "Q_LEARNING"
+                elif event.key == pygame.K_5:
+                    return "GBFS"
 
 
 def game_loop(mode, Q_table=None):
@@ -101,6 +107,22 @@ def game_loop(mode, Q_table=None):
                 action = max(Q_table[state], key=Q_table[state].get)
                 print("action found in q table")
             take_action(action, snake)  # Execute the chosen action
+        elif mode == "BFS":
+            bfs_path = [] if 'bfs_path' not in locals() else bfs_path
+            if not bfs_path:
+                bfs_path = bfs(snake, fruit, walls)
+
+            if bfs_path:
+                action = bfs_path.pop(0)
+                take_action(action, snake)
+        elif mode == "GBFS":
+            gbfs_path = [] if 'gbfs_path' not in locals() else gbfs_path
+            if not gbfs_path:
+                gbfs_path = gbfs(snake, fruit, walls)
+
+            if gbfs_path:
+                action = gbfs_path.pop(0)
+                take_action(action, snake)
 
         # Check for collisions with walls or boundaries
         if snake.check_collision() or snake.check_wall_collision(walls):
@@ -108,6 +130,8 @@ def game_loop(mode, Q_table=None):
 
         # Check if the snake eats the fruit
         if snake.body[0] == fruit.position:
+            gbfs_path = []
+            bfs_path = []
             snake.grow()
             score += 10
             walls.add_wall(snake.body, fruit.position)
@@ -126,8 +150,8 @@ if __name__ == "__main__":
 
     # Load an existing Q-table or train a new one
     Q_table = load_q_table("q_table.pkl")
-    if not Q_table:
-        Q_table = train_qlearning()
+    # if not Q_table:
+    #     Q_table = train_qlearning()
 
     score = None
 

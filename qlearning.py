@@ -1,8 +1,7 @@
-import numpy as np
 import random
 from game import Snake, Fruit, Wall
-from settings import GRID_WIDTH, GRID_HEIGHT, FPS
 import pickle
+from utils import *
 
 # Q-learning parameters
 ALPHA = 0.05  # Learning rate
@@ -11,11 +10,6 @@ EPSILON = 1.0  # Initial exploration rate
 EPSILON_DECAY = 0.999995
 MIN_EPSILON = 0.1
 NUM_EPISODES = 1500000
-
-# Reward values
-REWARD_FRUIT = 100
-REWARD_COLLISION = -1000
-REWARD_STEP = -1
 
 
 def get_state(snake, fruit, walls):
@@ -30,31 +24,6 @@ def get_state(snake, fruit, walls):
     ]
 
     return (head[0], head[1], dx, dy, *surroundings)
-
-
-def is_safe(x, y, walls, snake_body):
-    return 0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT and (x, y) not in walls.positions and (x, y) not in snake_body
-
-
-def calculate_reward(snake, fruit, walls):
-    if snake.check_wall_collision(walls) or snake.check_collision():
-        return REWARD_COLLISION
-    elif snake.body[0] == fruit.position:
-        return REWARD_FRUIT
-    else:
-        return REWARD_STEP
-
-
-def take_action(action, snake):
-    if action == 'UP':
-        snake.set_direction((0, -1))
-    elif action == 'DOWN':
-        snake.set_direction((0, 1))
-    elif action == 'LEFT':
-        snake.set_direction((-1, 0))
-    elif action == 'RIGHT':
-        snake.set_direction((1, 0))
-    snake.move()
 
 
 def train_qlearning():
