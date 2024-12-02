@@ -8,42 +8,39 @@ from bfs import *
 from gbfs import *
 from utils import *
 from ga import *
+from astar import *
 
 def main_menu(screen, score=None):
-    # Use a readable font size
     font = pygame.font.Font(None, 30)
 
-    # Define each line of text separately
     line1 = "Press 1 for User Mode"
     line2 = "Press 2 for BFS AI"
     line3 = "Press 3 for Monte Carlo AI"
     line4 = "Press 4 for Q-Learning AI"
     line5 = "Press 5 for GBFS AI"
     line6 = "Press 6 for GA AI"
-    score_text = f"Last Score: {score}" if score is not None else ""  # Display score if available
+    line7 = "Press 7 for A* AI"
+    score_text = f"Last Score: {score}" if score is not None else ""
 
-    # Render each line of text
     text1 = font.render(line1, True, (255, 255, 255))
     text2 = font.render(line2, True, (255, 255, 255))
     text3 = font.render(line3, True, (255, 255, 255))
     text4 = font.render(line4, True, (255, 255, 255))
     text5 = font.render(line5, True, (255, 255, 255))
     text6 = font.render(line6, True, (255, 255, 255))
+    text7 = font.render(line7, True, (255, 255, 255))
     score_display = font.render(score_text, True, (255, 255, 255))
 
-    # Clear the screen
     screen.fill((0, 0, 0))
-
-    # Display each line at a specified position, with spacing between lines
     screen.blit(text1, (10, 10))
     screen.blit(text2, (10, 40))
     screen.blit(text3, (10, 70))
     screen.blit(text4, (10, 100))
     screen.blit(text5, (10, 130))
     screen.blit(text6, (10, 160))
-    screen.blit(score_display, (10, 190))  # Display score below menu options
+    screen.blit(text7, (10, 190))
+    screen.blit(score_display, (10, 220))
 
-    # Update the display to show the text
     pygame.display.flip()
 
     while True:
@@ -64,6 +61,8 @@ def main_menu(screen, score=None):
                     return "GBFS"
                 elif event.key == pygame.K_6:
                     return "GA"
+                elif event.key == pygame.K_7:
+                    return "ASTAR"
 
 
 def game_loop(mode, Q_table=None):
@@ -137,6 +136,15 @@ def game_loop(mode, Q_table=None):
             if genetic_path:
                 action = genetic_path.pop(0)
                 take_action(action, snake)
+        elif mode == "ASTAR":
+            astar_path = [] if 'astar_path' not in locals() else astar_path
+            if not astar_path:
+                astar_path = astar(snake, fruit, walls)
+
+            if astar_path:
+                action = astar_path.pop(0)
+                take_action(action, snake)
+
 
         # Check for collisions with walls or boundaries
         if snake.check_collision() or snake.check_wall_collision(walls):
@@ -163,7 +171,7 @@ if __name__ == "__main__":
     screen = initialize_screen()
 
     # Load an existing Q-table or train a new one
-    Q_table = load_q_table("q_table.pkl")
+    Q_table = load_q_table("q_table_4000000.pkl")
     # if not Q_table:
     #     Q_table = train_qlearning()
 
