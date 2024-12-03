@@ -116,6 +116,9 @@ def game_loop(mode, Q_table=None):
             bfs_path = [] if 'bfs_path' not in locals() else bfs_path
             if not bfs_path:
                 bfs_path = bfs(snake, fruit, walls)
+                if not bfs_path:  # If no path found, end the game
+                    print("BFS could not find a path.")
+                    return score
 
             if bfs_path:
                 action = bfs_path.pop(0)
@@ -124,6 +127,9 @@ def game_loop(mode, Q_table=None):
             gbfs_path = [] if 'gbfs_path' not in locals() else gbfs_path
             if not gbfs_path:
                 gbfs_path = gbfs(snake, fruit, walls)
+                if not gbfs_path:  # If no path found, end the game
+                    print("GBFS could not find a path.")
+                    return score
 
             if gbfs_path:
                 action = gbfs_path.pop(0)
@@ -132,6 +138,9 @@ def game_loop(mode, Q_table=None):
             genetic_path = [] if 'genetic_path' not in locals() else genetic_path
             if not genetic_path:
                 genetic_path = genetic_algorithm(snake, fruit, walls)
+                if not genetic_path:  # If no path found, end the game
+                    print("Genetic Algorithm could not find a path.")
+                    return score
 
             if genetic_path:
                 action = genetic_path.pop(0)
@@ -140,11 +149,13 @@ def game_loop(mode, Q_table=None):
             astar_path = [] if 'astar_path' not in locals() else astar_path
             if not astar_path:
                 astar_path = astar(snake, fruit, walls)
+                if not astar_path:  # If no path found, end the game
+                    print("A* could not find a path.")
+                    return score
 
             if astar_path:
                 action = astar_path.pop(0)
                 take_action(action, snake)
-
 
         # Check for collisions with walls or boundaries
         if snake.check_collision() or snake.check_wall_collision(walls):
@@ -154,6 +165,7 @@ def game_loop(mode, Q_table=None):
         if snake.body[0] == fruit.position:
             gbfs_path = []
             bfs_path = []
+            astar_path = []
             snake.grow()
             score += 10
             walls.add_wall(snake.body, fruit.position)
