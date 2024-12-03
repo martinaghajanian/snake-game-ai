@@ -8,12 +8,13 @@ from gbfs import gbfs
 from ga import genetic_algorithm
 from astar import astar
 from qlearning import get_state, take_action, load_q_table
+from monte_carlo import monte_carlo_path
 import random
 
 def run_algorithm(mode, seed, Q_table=None):
     """
     Simulates a Snake game using a specific algorithm, without GUI.
-    :param mode: The algorithm mode ('BFS', 'GBFS', 'GA', 'Q_LEARNING', 'ASTAR').
+    :param mode: The algorithm mode ('BFS', 'GBFS', 'GA', 'Q_LEARNING', 'ASTAR', 'MONTE_CARLO').
     :param seed: Random seed for reproducibility.
     :param Q_table: Pre-trained Q-table for Q-learning (only required for Q_LEARNING mode).
     :return: The score achieved by the algorithm.
@@ -83,6 +84,17 @@ def run_algorithm(mode, seed, Q_table=None):
                     return score
             action = path.pop(0)
             take_action(action, snake)
+        elif mode == "MONTE_CARLO":
+            try:
+                action = monte_carlo_path(snake, fruit, walls)
+                if action:
+                    take_action(action, snake)
+                else:
+                    print("No valid Monte Carlo move found.")
+                    return score
+            except Exception as e:
+                print(f"Monte Carlo error: {e}")
+                return score
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
@@ -106,7 +118,7 @@ def analyze_algorithms(runs=50):
     :param runs: Number of runs for each algorithm.
     :return: A dictionary containing the results for each algorithm.
     """
-    algorithms = ["BFS", "GBFS", "GA", "Q_LEARNING", "ASTAR"]
+    algorithms = ["BFS", "GBFS", "GA", "Q_LEARNING", "ASTAR", "MONTE_CARLO"]
     results = {algo: [] for algo in algorithms}
 
     # Train or load the Q-learning Q-table

@@ -42,7 +42,7 @@ class MonteCarloAgent:
 
         # Choose move with highest average score
         best_move = max(move_scores, key=move_scores.get)
-        print(f"Move scores: {move_scores}")  # Debug print
+        # print(f"Move scores: {move_scores}")  # Debug print
         return best_move
 
     def _run_simulation(self, snake, fruit, walls, max_steps=100):
