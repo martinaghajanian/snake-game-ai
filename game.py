@@ -4,8 +4,13 @@ from settings import GRID_WIDTH, GRID_HEIGHT
 
 class Snake:
     def __init__(self):
-        self.body = [(GRID_WIDTH // 2, GRID_HEIGHT // 2)]
-        self.direction = (0, -1)  # Initial direction (moving upward)
+        # Random starting position
+        start_x = random.randint(1, GRID_WIDTH - 2)  # Avoid edges
+        start_y = random.randint(1, GRID_HEIGHT - 2)
+        self.body = [(start_x, start_y)]
+
+        # Random starting direction
+        self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])  # Up, Down, Left, Right
 
     def move(self):
         head_x, head_y = self.body[0]

@@ -9,13 +9,14 @@ GAMMA = 0.99  # Discount factor
 EPSILON = 1.0  # Initial exploration rate
 EPSILON_DECAY = 0.999995
 MIN_EPSILON = 0.1
-NUM_EPISODES = 1500000
+NUM_EPISODES = 10000000
 
 
 def get_state(snake, fruit, walls):
     head = snake.body[0]
     dx, dy = fruit.position[0] - head[0], fruit.position[1] - head[1]
 
+    # Check if the surrounding cells are safe (1 = safe, 0 = not safe)
     surroundings = [
         is_safe(head[0], head[1] - 1, walls, snake.body),  # Up
         is_safe(head[0], head[1] + 1, walls, snake.body),  # Down
@@ -23,7 +24,8 @@ def get_state(snake, fruit, walls):
         is_safe(head[0] + 1, head[1], walls, snake.body),  # Right
     ]
 
-    return (head[0], head[1], dx, dy, *surroundings)
+    # Return the state as a tuple
+    return (dx, dy, *surroundings)
 
 
 def train_qlearning():
@@ -84,12 +86,12 @@ def train_qlearning():
     return Q
 
 
-def save_q_table(Q, filename="q_table.pkl"):
+def save_q_table(Q, filename="q_table_4000000_notgood.pkl"):
     with open(filename, "wb") as file:
         pickle.dump(Q, file)
 
 
-def load_q_table(filename="q_table.pkl"):
+def load_q_table(filename="q_table_4000000_notgood.pkl"):
     try:
         with open(filename, "rb") as file:
             return pickle.load(file)

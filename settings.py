@@ -18,4 +18,4 @@ RED = (255, 0, 0)      # Fruit color
 BLUE = (0, 0, 255)     # Wall color
 
 # Game settings
-FPS = 15               # Frames per second (game speed)
+FPS = 30               # Frames per second (game speed)

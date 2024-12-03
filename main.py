@@ -171,7 +171,7 @@ if __name__ == "__main__":
     screen = initialize_screen()
 
     # Load an existing Q-table or train a new one
-    Q_table = load_q_table("q_table_4000000.pkl")
+    Q_table = load_q_table("q_table_10000000.pkl")
     # if not Q_table:
     #     Q_table = train_qlearning()
 

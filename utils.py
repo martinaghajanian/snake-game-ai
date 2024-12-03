@@ -1,12 +1,17 @@
 from settings import GRID_WIDTH, GRID_HEIGHT, FPS
 
 # Reward values
-REWARD_FRUIT = 100
-REWARD_COLLISION = -1000
+REWARD_FRUIT = 50000000
+REWARD_COLLISION = -10000
 REWARD_STEP = -1
 
 def is_safe(x, y, walls, snake_body):
-    return 0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT and (x, y) not in walls.positions and (x, y) not in snake_body
+    # Check if the cell is within grid boundaries and not in walls or the snake's body
+    if x < 0 or y < 0 or x >= GRID_WIDTH or y >= GRID_HEIGHT:
+        return 0  # Not safe (out of bounds)
+    if (x, y) in walls.positions or (x, y) in snake_body:
+        return 0  # Not safe (wall or snake body)
+    return 1  # Safe
 
 def calculate_reward(snake, fruit, walls):
     if snake.check_wall_collision(walls) or snake.check_collision():
