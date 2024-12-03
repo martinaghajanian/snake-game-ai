@@ -145,6 +145,18 @@ def game_loop(mode, Q_table=None):
             if genetic_path:
                 action = genetic_path.pop(0)
                 take_action(action, snake)
+        elif mode == "MONTE_CARLO":
+            try:
+                from monte_carlo import monte_carlo_path
+                action = monte_carlo_path(snake, fruit, walls)
+                if action:
+                    take_action(action, snake)
+                else:
+                    print("No valid Monte Carlo move found")
+                    return score
+            except Exception as e:
+                print(f"Monte Carlo error: {e}")
+                return score
         elif mode == "ASTAR":
             astar_path = [] if 'astar_path' not in locals() else astar_path
             if not astar_path:
