@@ -87,5 +87,3 @@ class Wall:
         if potential_positions:
             new_wall = random.choice(potential_positions)  # Choose a random valid position
             self.positions.append(new_wall)
-        else:
-            print("No space available to add a new wall.")

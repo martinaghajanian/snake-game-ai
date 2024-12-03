@@ -106,11 +106,11 @@ def game_loop(mode, Q_table=None):
         elif mode == "Q_LEARNING":
             state = get_state(snake, fruit, walls)
             if state not in Q_table:
-                print(f"State {state} not found in Q-table. Taking random action.")
+                # print(f"State {state} not found in Q-table. Taking random action.")
                 action = choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
             else:
                 action = max(Q_table[state], key=Q_table[state].get)
-                print("action found in q table")
+                # print("action found in q table")
             take_action(action, snake)  # Execute the chosen action
         elif mode == "BFS":
             bfs_path = [] if 'bfs_path' not in locals() else bfs_path

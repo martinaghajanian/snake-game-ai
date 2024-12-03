@@ -149,7 +149,7 @@ def analyze_algorithms(runs=50):
 
     # Calculate average and best scores
     summary = {}
-    print("\n--- Summary of Results ---")
+    print(f"\n--- Summary of {runs} runs ---")
     for algorithm in algorithms:
         avg_score = np.mean(results[algorithm])
         best_score = max(results[algorithm])
