@@ -111,7 +111,7 @@ def analyze_algorithms(runs=50):
 
     # Train or load the Q-learning Q-table
     print("Loading Q-learning table...")
-    Q_table = load_q_table("q_table_10000000.pkl")
+    Q_table = load_q_table("q_table.pkl")
     if not Q_table:
         print("Training Q-learning agent...")
         Q_table = train_qlearning()
@@ -153,7 +153,7 @@ def analyze_algorithms(runs=50):
 
 if __name__ == "__main__":
     # Number of runs for analysis
-    runs = 100
+    runs = 1000
     results, summary = analyze_algorithms(runs=runs)
 
     # Optional: Save results to a JSON file for further analysis

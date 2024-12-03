@@ -86,12 +86,12 @@ def train_qlearning():
     return Q
 
 
-def save_q_table(Q, filename="q_table_4000000_notgood.pkl"):
+def save_q_table(Q, filename="q_table.pkl"):
     with open(filename, "wb") as file:
         pickle.dump(Q, file)
 
 
-def load_q_table(filename="q_table_4000000_notgood.pkl"):
+def load_q_table(filename="q_table.pkl"):g
     try:
         with open(filename, "rb") as file:
             return pickle.load(file)
