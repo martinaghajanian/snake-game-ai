@@ -91,7 +91,7 @@ def save_q_table(Q, filename="q_table.pkl"):
         pickle.dump(Q, file)
 
 
-def load_q_table(filename="q_table.pkl"):g
+def load_q_table(filename="q_table.pkl"):
     try:
         with open(filename, "rb") as file:
             return pickle.load(file)
