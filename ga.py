@@ -7,8 +7,12 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
     directions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
     max_steps = 5000
 
+    def manhattan_distance(point1, point2):
+        return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1])
+
     def generate_individual():
         return [random.choice(directions) for _ in range(GRID_WIDTH * GRID_HEIGHT)]
+
 
     def fitness1(individual):
         snake_copy = Snake()
@@ -34,7 +38,8 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
                 record += 1
                 total_food += 1
                 steps_without_food = 0
-                fruit.respawn(snake_copy, walls)
+                fruit.new_position(snake_copy.body, walls) 
+
             if steps_without_food >= 200:
                 penalties += 1
                 steps_without_food = 0
@@ -62,7 +67,7 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
 
             if snake_copy.body[0] == fruit_copy.position:
                 score += 1
-                fruit_copy.respawn(snake_copy, walls)
+                fruit_copy.new_position(snake_copy.body, walls)
 
         return steps * steps * (2 ** score)
 
@@ -83,28 +88,40 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
 
             steps += 1
 
-
             if snake_copy.body[0] == fruit_copy.position:
                 score += 1
-                fruit_copy.respawn(snake_copy, walls)
+                fruit_copy.new_position(snake_copy.body, walls)
 
         distance_to_fruit = manhattan_distance(snake_copy.body[0], fruit_copy.position)
 
         return (steps * 10) + (score * 500) - distance_to_fruit
 
+
     def fitness4(individual):
         snake_copy = Snake()
         snake_copy.body = list(snake.body)
+        fruit_copy = Fruit()
+        fruit_copy.position = fruit.position
 
-        for action in individual:
+        steps = 0
+        score = 0
+
+        for action in individual[:max_steps]:
             take_action(action, snake_copy)
-            if snake_copy.body[0] == fruit.position:
-                return 0  # Optimal solution found
-            if snake_copy.check_collision() or snake_copy.check_wall_collision(walls):
-                return float('inf')  # Collision penalty
 
-        head = snake_copy.body[0]
-        return abs(head[0] - fruit.position[0]) + abs(head[1] - fruit.position[1])  # Manhattan distance to fruit
+            if snake_copy.check_collision() or snake_copy.check_wall_collision(walls):
+                break
+
+            steps += 1
+
+            if snake_copy.body[0] == fruit_copy.position:
+                score += 1
+                fruit_copy.new_position(snake_copy.body, walls)
+
+        distance_to_fruit = manhattan_distance(snake_copy.body[0], fruit_copy.position)
+
+        return -distance_to_fruit
+
 
 
     def mutate(individual):
