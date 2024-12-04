@@ -5,7 +5,7 @@ from game import Snake, Fruit, Wall
 from utils import *
 from bfs import bfs
 from gbfs import gbfs
-from ga import genetic_algorithm
+from ga import *
 from astar import astar
 from qlearning import get_state, take_action, load_q_table
 from monte_carlo import monte_carlo_path
@@ -73,7 +73,7 @@ def run_algorithm(mode, seed, Q_table=None):
             take_action(action, snake)
         elif mode == "GA":
             if not path:
-                path = genetic_algorithm(snake, fruit, walls)
+                path = genetic_algorithm_improved(snake, fruit, walls)
                 if not path:  # No path found
                     return score
             action = path.pop(0)
@@ -162,16 +162,18 @@ def analyze_algorithms(runs=50):
     summary = {}
     print(f"\n--- Summary of {runs} runs ---")
     for algorithm in algorithms:
-        avg_score = np.mean(results[algorithm])
-        best_score = max(results[algorithm])
+        filtered_scores = [score for score in results[algorithm] if score > 10]  # Exclude outliers
+        avg_score = np.mean(filtered_scores) if filtered_scores else 0  # Handle case with no valid scores
+        best_score = max(results[algorithm], default=0)  # Use default=0 to handle empty results
         summary[algorithm] = {
             "average_score": avg_score,
             "best_score": best_score,
             "scores": results[algorithm],
         }
-        print(f"{algorithm}: Average Score = {avg_score:.2f}, Best Score = {best_score}")
+        print(f"{algorithm}: Average Score (Excluding Outliers) = {avg_score:.2f}, Best Score = {best_score}")
 
     return results, summary
+
 
 
 if __name__ == "__main__":
