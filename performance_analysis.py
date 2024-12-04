@@ -9,6 +9,7 @@ from ga import genetic_algorithm
 from astar import astar
 from qlearning import get_state, take_action, load_q_table
 from monte_carlo import monte_carlo_path
+from dfs import dfs
 import random
 
 def run_algorithm(mode, seed, Q_table=None):
@@ -88,13 +89,23 @@ def run_algorithm(mode, seed, Q_table=None):
             try:
                 action = monte_carlo_path(snake, fruit, walls)
                 if action:
-                    take_action(action, snake)
+                    # Map action to snake movement and apply it
+                    snake.set_direction(action)
+                    snake.move()
                 else:
                     print("No valid Monte Carlo move found.")
                     return score
             except Exception as e:
                 print(f"Monte Carlo error: {e}")
                 return score
+        elif mode == "DFS":
+            dfs_path = [] if 'dfs_path' not in locals() else dfs_path
+            if not dfs_path:
+                dfs_path = dfs(snake, fruit, walls)
+                if not dfs_path:  # If no path found, end the game
+                    return score
+            action = dfs_path.pop(0)
+            take_action(action, snake)
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
@@ -118,7 +129,7 @@ def analyze_algorithms(runs=50):
     :param runs: Number of runs for each algorithm.
     :return: A dictionary containing the results for each algorithm.
     """
-    algorithms = ["BFS", "GBFS", "GA", "Q_LEARNING", "ASTAR", "MONTE_CARLO"]
+    algorithms = ["BFS", "GBFS", "GA", "Q_LEARNING", "ASTAR", "MONTE_CARLO", "DFS"]
     results = {algo: [] for algo in algorithms}
 
     # Train or load the Q-learning Q-table
@@ -165,7 +176,7 @@ def analyze_algorithms(runs=50):
 
 if __name__ == "__main__":
     # Number of runs for analysis
-    runs = 1000
+    runs = 20
     results, summary = analyze_algorithms(runs=runs)
 
     # Optional: Save results to a JSON file for further analysis
