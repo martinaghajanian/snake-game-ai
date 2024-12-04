@@ -9,6 +9,8 @@ from gbfs import *
 from utils import *
 from ga import *
 from astar import *
+from dfs import dfs  # Import DFS
+
 
 def main_menu(screen, score=None):
     font = pygame.font.Font(None, 30)
@@ -20,6 +22,7 @@ def main_menu(screen, score=None):
     line5 = "Press 5 for GBFS AI"
     line6 = "Press 6 for GA AI"
     line7 = "Press 7 for A* AI"
+    line8 = "Press 8 for DFS AI"
     score_text = f"Last Score: {score}" if score is not None else ""
 
     text1 = font.render(line1, True, (255, 255, 255))
@@ -29,6 +32,7 @@ def main_menu(screen, score=None):
     text5 = font.render(line5, True, (255, 255, 255))
     text6 = font.render(line6, True, (255, 255, 255))
     text7 = font.render(line7, True, (255, 255, 255))
+    text8 = font.render(line8, True, (255, 255, 255))
     score_display = font.render(score_text, True, (255, 255, 255))
 
     screen.fill((0, 0, 0))
@@ -39,7 +43,8 @@ def main_menu(screen, score=None):
     screen.blit(text5, (10, 130))
     screen.blit(text6, (10, 160))
     screen.blit(text7, (10, 190))
-    screen.blit(score_display, (10, 220))
+    screen.blit(text8, (10, 220))
+    screen.blit(score_display, (10, 250))
 
     pygame.display.flip()
 
@@ -63,6 +68,8 @@ def main_menu(screen, score=None):
                     return "GA"
                 elif event.key == pygame.K_7:
                     return "ASTAR"
+                elif event.key == pygame.K_8:
+                    return "DFS"
 
 
 def game_loop(mode, Q_table=None):
@@ -106,85 +113,77 @@ def game_loop(mode, Q_table=None):
         elif mode == "Q_LEARNING":
             state = get_state(snake, fruit, walls)
             if state not in Q_table:
-                # print(f"State {state} not found in Q-table. Taking random action.")
                 action = choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
             else:
                 action = max(Q_table[state], key=Q_table[state].get)
-                # print("action found in q table")
-            take_action(action, snake)  # Execute the chosen action
+            take_action(action, snake)
         elif mode == "BFS":
             bfs_path = [] if 'bfs_path' not in locals() else bfs_path
             if not bfs_path:
                 bfs_path = bfs(snake, fruit, walls)
-                if not bfs_path:  # If no path found, end the game
-                    print("BFS could not find a path.")
+                if not bfs_path:
                     return score
-
-            if bfs_path:
-                action = bfs_path.pop(0)
-                take_action(action, snake)
+            action = bfs_path.pop(0)
+            take_action(action, snake)
         elif mode == "GBFS":
             gbfs_path = [] if 'gbfs_path' not in locals() else gbfs_path
             if not gbfs_path:
                 gbfs_path = gbfs(snake, fruit, walls)
-                if not gbfs_path:  # If no path found, end the game
-                    print("GBFS could not find a path.")
+                if not gbfs_path:
                     return score
-
-            if gbfs_path:
-                action = gbfs_path.pop(0)
-                take_action(action, snake)
+            action = gbfs_path.pop(0)
+            take_action(action, snake)
         elif mode == "GA":
             genetic_path = [] if 'genetic_path' not in locals() else genetic_path
             if not genetic_path:
                 genetic_path = genetic_algorithm(snake, fruit, walls)
-                if not genetic_path:  # If no path found, end the game
-                    print("Genetic Algorithm could not find a path.")
+                if not genetic_path:
                     return score
-
-            if genetic_path:
-                action = genetic_path.pop(0)
-                take_action(action, snake)
+            action = genetic_path.pop(0)
+            take_action(action, snake)
         elif mode == "MONTE_CARLO":
-            try:
-                from monte_carlo import monte_carlo_path
-                action = monte_carlo_path(snake, fruit, walls)
-                if action:
-                    take_action(action, snake)
-                else:
-                    print("No valid Monte Carlo move found")
-                    return score
-            except Exception as e:
-                print(f"Monte Carlo error: {e}")
+            from monte_carlo import monte_carlo_path
+            action = monte_carlo_path(snake, fruit, walls)
+            if action:
+                snake.set_direction(action)
+                snake.move()
+            else:
+                print("No valid Monte Carlo move found.")
                 return score
         elif mode == "ASTAR":
             astar_path = [] if 'astar_path' not in locals() else astar_path
             if not astar_path:
                 astar_path = astar(snake, fruit, walls)
-                if not astar_path:  # If no path found, end the game
-                    print("A* could not find a path.")
+                if not astar_path:
                     return score
-
-            if astar_path:
-                action = astar_path.pop(0)
-                take_action(action, snake)
+            action = astar_path.pop(0)
+            take_action(action, snake)
+        elif mode == "DFS":
+            dfs_path = [] if 'dfs_path' not in locals() else dfs_path
+            if not dfs_path:
+                dfs_path = dfs(snake, fruit, walls)
+                if not dfs_path:
+                    print("DFS could not find a path.")
+                    return score
+            action = dfs_path.pop(0)
+            take_action(action, snake)
 
         # Check for collisions with walls or boundaries
         if snake.check_collision() or snake.check_wall_collision(walls):
-            return score  # Return the score to main menu on game over
+            return score
 
         # Check if the snake eats the fruit
         if snake.body[0] == fruit.position:
-            gbfs_path = []
             bfs_path = []
+            gbfs_path = []
             astar_path = []
+            dfs_path = []
             snake.grow()
             score += 10
             walls.add_wall(snake.body, fruit.position)
-            walls_count += 1
             fruit.new_position(snake.body, walls.positions)
 
-        # Draw all elements, including score and wall count
+        # Draw all elements
         draw_elements(screen, snake, fruit, walls, score, walls_count)
 
         # Control the game speed
@@ -193,12 +192,7 @@ def game_loop(mode, Q_table=None):
 
 if __name__ == "__main__":
     screen = initialize_screen()
-
-    # Load an existing Q-table or train a new one
     Q_table = load_q_table("q_table.pkl")
-    # if not Q_table:
-    #     Q_table = train_qlearning()
-
     score = None
 
     while True:

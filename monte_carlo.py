@@ -87,4 +87,12 @@ def monte_carlo_path(snake, fruit, walls):
     """
     agent = MonteCarloAgent()
     best_move = agent.simulate_game(snake, fruit, walls)
-    return best_move
+
+    # Map move name to direction
+    move_map = {
+        "UP": (0, -1),
+        "DOWN": (0, 1),
+        "LEFT": (-1, 0),
+        "RIGHT": (1, 0)
+    }
+    return move_map[best_move]
