@@ -10,7 +10,7 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
     def generate_individual():
         return [random.choice(directions) for _ in range(GRID_WIDTH * GRID_HEIGHT)]
 
-    def fitness(individual):
+    def fitness1(individual):
         snake_copy = Snake()
         snake_copy.body = list(snake.body)
         record = 0
@@ -42,6 +42,71 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
         avg_steps = total_steps / total_food if total_food > 0 else total_steps
         return record * 5000 - deaths * 150 - avg_steps * 100 - penalties * 1000
 
+
+    def fitness2(individual):
+        snake_copy = Snake()
+        snake_copy.body = list(snake.body)
+        fruit_copy = Fruit()
+        fruit_copy.position = fruit.position
+
+        steps = 0
+        score = 0
+
+        for action in individual[:max_steps]:
+            take_action(action, snake_copy)
+
+            if snake_copy.check_collision() or snake_copy.check_wall_collision(walls):
+                break
+
+            steps += 1
+
+            if snake_copy.body[0] == fruit_copy.position:
+                score += 1
+                fruit_copy.respawn(snake_copy, walls)
+
+        return steps * steps * (2 ** score)
+
+    def fitness3(individual):
+        snake_copy = Snake()
+        snake_copy.body = list(snake.body)
+        fruit_copy = Fruit()
+        fruit_copy.position = fruit.position
+
+        steps = 0
+        score = 0
+
+        for action in individual[:max_steps]:
+            take_action(action, snake_copy)
+
+            if snake_copy.check_collision() or snake_copy.check_wall_collision(walls):
+                break
+
+            steps += 1
+
+
+            if snake_copy.body[0] == fruit_copy.position:
+                score += 1
+                fruit_copy.respawn(snake_copy, walls)
+
+        distance_to_fruit = manhattan_distance(snake_copy.body[0], fruit_copy.position)
+
+        return (steps * 10) + (score * 500) - distance_to_fruit
+
+    def fitness4(individual):
+        snake_copy = Snake()
+        snake_copy.body = list(snake.body)
+
+        for action in individual:
+            take_action(action, snake_copy)
+            if snake_copy.body[0] == fruit.position:
+                return 0  # Optimal solution found
+            if snake_copy.check_collision() or snake_copy.check_wall_collision(walls):
+                return float('inf')  # Collision penalty
+
+        head = snake_copy.body[0]
+        return abs(head[0] - fruit.position[0]) + abs(head[1] - fruit.position[1])  # Manhattan distance to fruit
+
+
     def mutate(individual):
         for i in range(len(individual)):
             if random.random() < mutation_rate:
@@ -57,7 +122,7 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
 
     for _ in range(generations):
 
-        fitness_scores = [(fitness(individual), individual) for individual in population]
+        fitness_scores = [(fitness1(individual), individual) for individual in population]
         fitness_scores.sort(key=lambda x: x[0], reverse=True)
 
 
@@ -75,5 +140,5 @@ def genetic_algorithm(snake, fruit, walls, population_size=50, generations=100, 
         population = next_generation
 
 
-    best_fitness, best_individual = max((fitness(ind), ind) for ind in population)
+    best_fitness, best_individual = max((fitness1(ind), ind) for ind in population)
     return best_individual
