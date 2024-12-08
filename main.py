@@ -136,7 +136,7 @@ def game_loop(mode, Q_table=None):
         elif mode == "GA":
             genetic_path = [] if 'genetic_path' not in locals() else genetic_path
             if not genetic_path:
-                genetic_path = genetic_algorithm(snake, fruit, walls)
+                genetic_path = genetic_algorithm_improved(snake, fruit, walls)
                 if not genetic_path:
                     return score
             action = genetic_path.pop(0)
