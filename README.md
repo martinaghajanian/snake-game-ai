@@ -4,15 +4,25 @@ Welcome to the **Snake Game AI** project! 🐍 This repository contains an imple
 
 ## Features
 
-- 🎮 **Playable Snake Game**: A fully functional snake game built using Python.
-- 🧠 **AI-Powered Gameplay**: Uses machine learning techniques to train an AI to play the game.
-- 📊 **Visualization**: Real-time display of the game with the AI controlling the snake.
-- ⚙️ **Customizable**: Easily tweak the game mechanics or AI settings for experiments or fun.
+- 🎮 **Playable Snake Game**: A fully functional modified version of snake game built using Python.
+- 🧠 **AI-Powered Gameplay**: Uses search strategies and machine learning techniques to train an AI to play the game.
+- 📊 **Visualization**: Real-time display of the game with the AI controlling the snake or user mode to play.
 
 ---
+## Requirements
 
+This project requires the following Python libraries:
+- `pygame`
+- `numpy`
 
-## Installation
+### Installation
+
+To install the required libraries and codebase, run the following commands:
+
+```bash
+pip install pygame
+pip install numpy
+
 
 **Clone the Repository**:
    ```bash
