@@ -182,6 +182,7 @@ def game_loop(mode, Q_table=None):
             score += 10
             walls.add_wall(snake.body, fruit.position)
             fruit.new_position(snake.body, walls.positions)
+            walls_count += 1
 
         # Draw all elements
         draw_elements(screen, snake, fruit, walls, score, walls_count)
