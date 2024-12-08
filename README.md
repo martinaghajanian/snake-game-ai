@@ -26,6 +26,6 @@ Run the Game: Choose your AI agent
 ```
 ## Demo
 
-Here’s a preview of the Snake Game AI in action for DFS algorithm:
+Here’s a preview of the Snake Game AI in action (DFS algorithm):
 
 ![Snake Game Demo](df.gif)
