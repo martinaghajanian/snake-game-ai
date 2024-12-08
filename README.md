@@ -24,3 +24,8 @@ Run the Game: Choose your AI agent
    ```bash
   python main.py
 ```
+## Demo
+
+Here’s a preview of the Snake Game AI in action for DFS algorithm:
+
+![Snake Game Demo](df.gif)
