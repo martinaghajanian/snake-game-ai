@@ -18,3 +18,9 @@ Welcome to the **Snake Game AI** project! 🐍 This repository contains an imple
    ```bash
    git clone https://github.com/martinaghajanian/snake-game-ai.git
 ```
+
+## Usage
+Run the Game: Choose your AI agent
+   ```bash
+  python main.py
+```
