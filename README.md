@@ -19,10 +19,10 @@ This project requires the following Python libraries:
 
 To install the required libraries and codebase, run the following commands:
 
-```bash
-pip install pygame
-pip install numpy
-
+   ```bash
+   pip install pygame
+   pip install numpy
+```
 
 **Clone the Repository**:
    ```bash
